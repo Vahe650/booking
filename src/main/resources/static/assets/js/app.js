@@ -37,7 +37,7 @@ Index Of Script
 ----------------------------------------------*/
 
 (function (jQuery) {
-    drawCalendar()
+    // drawCalendar()
 
     "use strict";
 
@@ -430,7 +430,11 @@ Index Of Script
         $('[data-placement="daterange"]').daterangepicker({
             opens: 'center'
         }, function (start, end, label) {
-            console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+            let startDateParam = start.format('YYYY-MM-DDTHH:mm:ss');
+            let endDateParam = end.format('YYYY-MM-DDTHH:mm:ss');
+
+            window.location.href = '/dashboard?startDate=' + encodeURIComponent(startDateParam)
+                + '&endDate=' + encodeURIComponent(endDateParam);
         });
 
         $('#view-event').on('click', function (e) {
@@ -507,58 +511,203 @@ Index Of Script
 
         for (let i = 1; i < serializeArray.length; i++) {
             if (!serializeArray[i].value) {
-                valid = false
-                $("#modalTitle").append("Required fields are empty")
+                valid = false;
+                $("#modalTitle").append("Required fields are empty");
                 setTimeout(() => {
-                    $("#modalTitle").empty()
-                }, 1000)
+                    $("#modalTitle").empty();
+                }, 1000);
                 break;
             }
         }
         if (valid) {
             $('#date-event').modal('toggle');
+
+            let propertyId = $('#propertySelector').val();
+
             const data = {
                 "id": serializeArray[0].value,
                 "name": serializeArray[1].value,
                 "members": serializeArray[2].value,
+                "price": serializeArray[3].value,
                 "startDate": serializeArray[4].value,
-                "endDate": serializeArray[5].value
-            }
+                "endDate": serializeArray[5].value,
+                "scheduleType": serializeArray[6].value,
+                "cost": serializeArray[7].value,
+                "propertyId": propertyId
+            };
+
             $.ajax({
                 type: "POST",
                 data: data,
-                url: '/add',
-                success: function (data) {
+                url: '/api/schedule/add',
+                success: function (response) {
                     $("#scheduleForm").trigger('reset');
-                    $('#calendar1').empty()
-                    drawCalendar()
+                    if (propertyId && propertyId.trim() !== "") {
+                        window.location.href = "/?propertyId=" + propertyId;
+                    } else {
+                        window.location.href = "/";
+                    }
                 }
             });
         }
     });
 
+    $("#submitProperty").on('click', function () {
+        let serializeArray = $('#propertyForm').serializeArray();
+        console.log("serializeArray", serializeArray);
+        let valid = true;
 
-    function drawCalendar() {
+        for (let i = 1; i < serializeArray.length; i++) {
+            if (!serializeArray[i].value) {
+                valid = false;
+                $("#propertyModalTitle").append(" - Required fields are empty");
+                setTimeout(() => {
+                    $("#propertyModalTitle").text("Add Property");
+                }, 1000);
+                break;
+            }
+        }
+
+        if (valid) {
+            $('#property-event').modal('toggle');
+
+            const data = {
+                "id": serializeArray[0].value,
+                "name": serializeArray[1].value,
+                "googleMapUrl": serializeArray[2].value,
+                "yandexMapUrl": serializeArray[3].value
+            };
+
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: '/api/property/add',
+                success: function (response) {
+                    $("#propertyForm").trigger('reset');
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error adding property:", error);
+                }
+            });
+        }
+    });
+
+    $(document).ready(function () {
+        $('#date-event').on('shown.bs.modal', function () {
+            console.log("Schedule modal opened: making AJAX call for properties");
+
+            $.ajax({
+                type: 'GET',
+                url: '/api/property',
+                success: function (data) {
+                    console.log("Properties data fetched:", data);
+                    var propertySelect = $('#schedule-property');
+                    propertySelect.empty();
+
+                    propertySelect.append($('<option>', {
+                        value: '',
+                        text: 'Select a property'
+                    }));
+
+                    $.each(data, function (index, property) {
+                        propertySelect.append($('<option>', {
+                            value: property.id,
+                            text: property.name
+                        }));
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching properties:", error);
+                }
+            });
+        });
+    });
+
+    $(document).ready(function(){
+        // Only run this code on the home page
+        if (window.location.pathname === '/') {
+            $.ajax({
+                type: 'GET',
+                url: '/api/property',
+                success: function(data){
+                    var $propertySelect = $('#propertySelector');
+                    $propertySelect.empty();
+                    // Append property options (no placeholder)
+                    $.each(data, function(i, property){
+                        $propertySelect.append($('<option>', {
+                            value: property.id,
+                            text: property.name
+                        }));
+                    });
+
+                    // Check for propertyId in the URL
+                    var propertyIdFromUrl = getParameterByName('propertyId');
+                    if(propertyIdFromUrl) {
+                        $propertySelect.val(propertyIdFromUrl);
+                    } else if(data.length > 0) {
+                        // No propertyId in URL, so select the first property
+                        var firstPropertyId = data[0].id;
+                        $propertySelect.val(firstPropertyId);
+                        // Redirect to "/" with the first property id
+                        window.location.href = '/?propertyId=' + firstPropertyId;
+                    }
+                },
+                error: function(err){
+                    console.error("Error fetching properties:", err);
+                }
+            });
+        }
+
+        // When the user changes the selection, redirect accordingly.
+        $('#propertySelector').on('change', function(){
+            var propertyId = $(this).val();
+            if(propertyId) {
+                window.location.href = '/?propertyId=' + propertyId;
+            } else {
+                window.location.href = '/';
+            }
+        });
+    });
+
+    // Helper function to extract URL parameters
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    $(document).ready(function () {
+        // Determine if a propertyId is present in the URL
+        var propertyId = getParameterByName('propertyId');
+        var scheduleUrl = '/api/schedule';
+        if (propertyId) {
+            scheduleUrl += '?propertyId=' + propertyId;
+        }
+
+        // Fetch schedule data from the backend
         $.ajax({
             type: 'GET',
-            url: '/schedule',
+            url: scheduleUrl,
             success: function (data) {
-                let list = data;
-                let c = []
-                for (let g = 0; g < list.length; g++) {
-                    c.push({
-                        title: list[g].name + ' members- ' + list[g].members,
-                        // url: '/',
-                        start: list[g].startDate,
-                        end: list[g].endDate,
-                        color: g % 2 === 0 ? '#fa0606' : '#B9FA06FF'
-                    })
+                // Convert returned data into an events array for FullCalendar
+                let eventsArray = [];
+                for (let i = 0; i < data.length; i++) {
+                    eventsArray.push({
+                        title: data[i].name + ' members- ' + data[i].members,
+                        start: data[i].startDate,
+                        end: data[i].endDate,
+                        color: i % 2 === 0 ? '#fa0606' : '#B9FA06FF'
+                    });
                 }
-                // calender 1 js
-                var calendar1;
+
+                // Initialize FullCalendar with the events array
                 if (jQuery('#calendar1').length) {
                     var calendarEl = document.getElementById('calendar1');
-                    calendar1 = new FullCalendar.Calendar(calendarEl, {
+                    var calendar1 = new FullCalendar.Calendar(calendarEl, {
                         selectable: true,
                         plugins: ["timeGrid", "dayGrid", "list", "interaction"],
                         timeZone: "UTC",
@@ -571,62 +720,72 @@ Index Of Script
                             center: "title",
                             right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek"
                         },
+                        events: eventsArray,
                         dateClick: function (info) {
-
-                            let date = info.dateStr.split("-").join("-");
-                            let hours = new Date().getHours();
-                            let minutes = new Date().getMinutes();
-                            let b = date + 'T' + '00:00:00'
-                            console.log("clickked", b)
+                            let date = info.dateStr;
+                            // Construct a date string in the desired format
+                            let b = date + 'T00:00:00';
+                            console.log("Date clicked:", b);
+                            // Example: Fetch schedule details for the clicked date
+                            var propertyIdFromUrl = getParameterByName('propertyId');
                             $.ajax({
                                 type: 'GET',
-                                url: '/date?localDateTime=' + b,
+                                url: '/api/schedule/date?localDateTime=' + b + '&propertyId=' + propertyIdFromUrl,
                                 success: function (data) {
-                                    console.log(data)
+                                    console.log("Schedule data:", data);
+
                                     if (data) {
-                                        $('#schedule-id').val(data.id)
-                                        $('#schedule-title').val(data.name)
-                                        $('#members-count').val(data.members);
-                                        $('#schedule-end-date').val(data.endDate);
-                                        $('#schedule-start-date').val(data.startDate)
-
-                                        // $('#members-count').val(data.members);
+                                        $('#schedule-id').val(data.id || '');
+                                        $('#schedule-title').val(data.name || '');
+                                        $('#members-count').val(data.members || '');
+                                        $('#schedule-start-date').val(data.startDate || '');
+                                        $('#schedule-end-date').val(data.endDate || '');
+                                        $('#schedule-cost').val(data.cost || '');
                                     } else {
-                                        $('#schedule-start-date').val(b)
-                                        $('#schedule-end-date').val(b)
-
+                                        // Clear all inputs
+                                        $('#schedule-id').val('');
+                                        $('#schedule-title').val('');
+                                        $('#members-count').val('');
+                                        $('#schedule-start-date').val('');
+                                        $('#schedule-end-date').val('');
+                                        $('#schedule-cost').val('');
                                     }
-                                    $('#date-event').modal('show')
-                                    console.log("clickkeddata", data)
+
+                                    $('#date-event').modal('show');
+                                },
+                                error: function (err) {
+                                    console.error("Error fetching schedule for date:", err);
                                 }
-                            })
-
-                        },
-                        events: c
-
+                            });
+                        }
                     });
                     calendar1.render();
+
+                    // Optionally, attach a form submit handler if needed
                     $(document).on("submit", "#submit-schedule", function (e) {
-                        e.preventDefault()
-                        const title = $(this).find('#schedule-title').val()
-                        const startDate = moment(new Date($(this).find('#schedule-start-date').val()), 'YYYY-MM-DD').format('YYYY-MM-DD') + 'T05:30:00.000Z'
-                        const endDate = moment(new Date($(this).find('#schedule-end-date').val()), 'YYYY-MM-DD').format('YYYY-MM-DD') + 'T05:30:00.000Z'
-                        const color = $(this).find('#schedule-color').val()
-                        console.log(startDate, endDate, color)
+                        e.preventDefault();
+                        const title = $(this).find('#schedule-title').val();
+                        const startDate = moment(new Date($(this).find('#schedule-start-date').val()), 'YYYY-MM-DD')
+                            .format('YYYY-MM-DD') + 'T05:30:00.000Z';
+                        const endDate = moment(new Date($(this).find('#schedule-end-date').val()), 'YYYY-MM-DD')
+                            .format('YYYY-MM-DD') + 'T05:30:00.000Z';
+                        const color = $(this).find('#schedule-color').val();
                         const event = {
                             title: title,
                             start: startDate || '2020-12-22T02:30:00',
                             end: endDate || '2020-12-12T14:30:00',
                             color: color || '#7858d7'
-                        }
-                        $(this).closest('#date-event').modal('hide')
-                        calendar1.addEvent(event)
-                    })
+                        };
+                        $(this).closest('#date-event').modal('hide');
+                        calendar1.addEvent(event);
+                    });
                 }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching schedules:", error);
             }
         });
-    }
-
+    });
 
     // Enable all tooltips
     $('[data-toggle="tooltip"]').tooltip();

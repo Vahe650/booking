@@ -1,23 +1,22 @@
 package com.booking.bookingservice.service;
 
 import com.booking.bookingservice.dto.ScheduleDto;
+import com.booking.bookingservice.model.Schedule;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface ScheduleService {
 
-    ScheduleDto save(ScheduleDto scheduleDto);
+  ScheduleDto save(ScheduleDto scheduleDto);
 
-    List<ScheduleDto> findAll();
+  Map<Schedule.ScheduleType, BigDecimal> calculateCostByType(LocalDateTime startDate, LocalDateTime endDate);
 
-    List<ScheduleDto> findByStartAndEndDate(String startDate, String endDate);
+  List<ScheduleDto> findAll();
 
-    List<ScheduleDto> findByMonth(String month);
+  List<ScheduleDto> findAllByPropertyId(Long propertyId);
 
-    List<ScheduleDto> findByWeek(String week);
-
-    List<ScheduleDto> findByDay(String day);
-
-    ScheduleDto getByStartDate(LocalDateTime localDate);
+  ScheduleDto getByStartDateAndPropertyId(LocalDateTime localDate, Long propertyId);
 }

@@ -3,67 +3,74 @@ package com.booking.bookingservice.service.impl;
 import com.booking.bookingservice.dto.ScheduleDto;
 import com.booking.bookingservice.mapper.ScheduleMapper;
 import com.booking.bookingservice.model.Schedule;
+import com.booking.bookingservice.reposirory.PropertyRepository;
 import com.booking.bookingservice.reposirory.ScheduleRepository;
 import com.booking.bookingservice.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import static com.booking.bookingservice.util.DateUtil.dateTimeFormatterWithDateAndTime;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduleServiceImpl implements ScheduleService {
 
-    private final ScheduleRepository scheduleRepository;
-    private final ScheduleMapper scheduleMapper;
+  private final ScheduleRepository scheduleRepository;
+  private final PropertyRepository propertyRepository;
+  private final ScheduleMapper scheduleMapper;
 
-    @Override
-    public ScheduleDto save(ScheduleDto scheduleDto) {
-        Schedule schedule = scheduleMapper.toEntity(scheduleDto);
-        Schedule save = scheduleRepository.save(schedule);
-        String updateOrSave = scheduleDto.getId() != null ? "updated" : "saved";
-        log.info("schedule is {}", updateOrSave);
-        return scheduleMapper.toDto(save);
+  @Override
+  public ScheduleDto save(ScheduleDto scheduleDto) {
+    if (!scheduleRepository.findAllActiveBetween(LocalDateTime.parse(scheduleDto.startDate()), LocalDateTime.parse(scheduleDto.endDate()))
+      .isEmpty()) {
+      log.error("Schedule already exists in that range");
+      return null;
     }
+    Schedule schedule = scheduleMapper.toEntity(scheduleDto);
+    propertyRepository.findById(scheduleDto.propertyId())
+      .ifPresentOrElse(schedule::setProperty, () -> schedule.setProperty(null));
 
-    @Override
-    public List<ScheduleDto> findAll() {
-        return scheduleMapper.toDto(scheduleRepository.findAll());
-    }
+    Schedule savedSchedule = scheduleRepository.save(schedule);
+    log.info("Schedule is {}", scheduleDto.id() != null ? "updated" : "saved");
+    return scheduleMapper.toDto(savedSchedule);
+  }
 
-    @Override
-    public List<ScheduleDto> findByStartAndEndDate(String startDate, String endDate) {
-        DateTimeFormatter dateTimeFormatter = dateTimeFormatterWithDateAndTime();
-        LocalDateTime start = LocalDateTime.parse(startDate, dateTimeFormatter);
-        LocalDateTime end = LocalDateTime.parse(endDate, dateTimeFormatter);
+  @Override
+  public Map<Schedule.ScheduleType, BigDecimal> calculateCostByType(LocalDateTime startDate, LocalDateTime endDate) {
+    log.info("Calculating cost by schedule type");
+    List<Schedule> schedules = scheduleRepository.findAllActiveBetween(startDate, endDate);
 
-        return scheduleMapper.toDto(scheduleRepository.findAllByStartDateAndEndDate(start, end));
-    }
+    return schedules.stream()
+      .collect(Collectors.groupingBy(
+        s -> s.getScheduleType() != null ? s.getScheduleType() : Schedule.ScheduleType.NO_TAX,
+        Collectors.mapping(
+          s -> s.getCost() == null ? BigDecimal.ZERO : s.getCost(),
+          Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)
+        )
+      ));
+  }
 
-    @Override
-    public List<ScheduleDto> findByMonth(String month) {
-        return null;
-    }
+  @Override
+  public List<ScheduleDto> findAll() {
+    log.info("Find All Schedules");
+    return scheduleMapper.toDto(scheduleRepository.findAll());
+  }
 
-    @Override
-    public List<ScheduleDto> findByWeek(String week) {
-        return null;
-    }
+  @Override
+  public List<ScheduleDto> findAllByPropertyId(Long propertyId) {
+    log.info("Find All Schedules By Property Id: {}", propertyId);
+    return scheduleMapper.toDto(scheduleRepository.findAllByPropertyId(propertyId));
+  }
 
-    @Override
-    public List<ScheduleDto> findByDay(String day) {
-        return null;
-    }
-
-    @Override
-    public ScheduleDto getByStartDate(LocalDateTime localDateTime) {
-        return scheduleMapper.toDto(scheduleRepository.findAllByStartDate(localDateTime));
-
-    }
+  @Override
+  public ScheduleDto getByStartDateAndPropertyId(LocalDateTime localDateTime, Long propertyId) {
+    log.info("Find Schedule By Start Date");
+    return scheduleMapper.toDto(scheduleRepository.findAllByStartDateAndPropertyId(localDateTime, propertyId));
+  }
 }

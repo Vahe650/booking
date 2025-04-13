@@ -1,31 +1,38 @@
 package com.booking.bookingservice.controller;
 
-import com.booking.bookingservice.dto.ScheduleDto;
+import com.booking.bookingservice.model.Schedule;
+import com.booking.bookingservice.service.PropertyService;
 import com.booking.bookingservice.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import static com.booking.bookingservice.util.Constants.PROPERTIES;
+import static com.booking.bookingservice.util.Constants.SCHEDULES;
+import static com.booking.bookingservice.util.Constants.SCHEDULE_TYPES;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/")
 public class ScheduleController {
 
-    private final ScheduleService scheduleService;
+  private final ScheduleService scheduleService;
+  private final PropertyService propertyService;
 
-
-    @GetMapping("/")
-    public String schedulePage(@ModelAttribute("startDate") String startDate,
-                               @ModelAttribute("endDate") String endDate,
-                               ModelMap modelMap) {
-        List<ScheduleDto> byStartAndEndDate = scheduleService.findAll();
-//        modelMap.addAttribute("schedules", byStartAndEndDate);
-        return "mySchedule";
+  @GetMapping
+  public String schedulePage(@RequestParam(required = false) Long propertyId,
+                             ModelMap modelMap) {
+    if (propertyId != null) {
+      modelMap.addAttribute(SCHEDULES, scheduleService.findAllByPropertyId(propertyId));
+    } else {
+      modelMap.addAttribute(SCHEDULES, scheduleService.findAll());
     }
+    modelMap.addAttribute(PROPERTIES, propertyService.findAll());
+    modelMap.addAttribute(SCHEDULE_TYPES, Schedule.ScheduleType.values());
+    return "mySchedule";
+  }
 
-    }
+}
