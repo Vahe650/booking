@@ -696,10 +696,14 @@ Index Of Script
                 // Convert returned data into an events array for FullCalendar
                 let eventsArray = [];
                 for (let i = 0; i < data.length; i++) {
+                    console.log('data','>>>>>>');
+                    console.log(data,'>>>>>>');
                     eventsArray.push({
                         title: data[i].name + ' members- ' + data[i].members,
                         start: data[i].startDate,
                         end: data[i].endDate,
+                        publicId: data[i].id,
+                        someAnotherId: data[i].id,
                         color: i % 2 === 0 ? '#fa0606' : '#B9FA06FF'
                     });
                 }
@@ -722,15 +726,15 @@ Index Of Script
                         },
                         events: eventsArray,
                         dateClick: function (info) {
+                            console.log(info);
                             let date = info.dateStr;
                             // Construct a date string in the desired format
-                            let b = date + 'T00:00:00';
-                            console.log("Date clicked:", b);
+                            console.log("Date clicked:", info);
                             // Example: Fetch schedule details for the clicked date
                             var propertyIdFromUrl = getParameterByName('propertyId');
                             $.ajax({
                                 type: 'GET',
-                                url: '/api/schedule/date?localDateTime=' + b + '&propertyId=' + propertyIdFromUrl,
+                                url: '/api/schedule/date?localDate=' + date + '&propertyId=' + propertyIdFromUrl,
                                 success: function (data) {
                                     console.log("Schedule data:", data);
 
@@ -741,14 +745,17 @@ Index Of Script
                                         $('#schedule-start-date').val(data.startDate || '');
                                         $('#schedule-end-date').val(data.endDate || '');
                                         $('#schedule-cost').val(data.cost || '');
+                                        $('#schedule-type').val(data.scheduleType || '');
                                     } else {
                                         // Clear all inputs
                                         $('#schedule-id').val('');
                                         $('#schedule-title').val('');
-                                        $('#members-count').val('');
-                                        $('#schedule-start-date').val('');
-                                        $('#schedule-end-date').val('');
-                                        $('#schedule-cost').val('');
+                                        $('#members-count').val(4);
+                                        $('#schedule-start-date').val(date);
+                                        $('#schedule-end-date').val(date);
+                                        $('#schedule-cost').val(5000);
+                                        $('#schedule-type').val('BOOKING');
+
                                     }
 
                                     $('#date-event').modal('show');

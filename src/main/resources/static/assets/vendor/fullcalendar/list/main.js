@@ -42,6 +42,7 @@ Docs & License: https://fullcalendar.io/
     var ListEventRenderer = /** @class */ (function (_super) {
         __extends(ListEventRenderer, _super);
         function ListEventRenderer(listView) {
+            console.log(listView);
             var _this = _super.call(this, listView.context) || this;
             _this.listView = listView;
             return _this;
@@ -58,6 +59,8 @@ Docs & License: https://fullcalendar.io/
         };
         // generates the HTML for a single event row
         ListEventRenderer.prototype.renderSegHtml = function (seg) {
+            console.log('seg');
+            console.log(seg.eventRange);
             var _a = this.context, view = _a.view, theme = _a.theme;
             var eventRange = seg.eventRange;
             var eventDef = eventRange.def;

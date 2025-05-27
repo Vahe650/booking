@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -29,12 +30,12 @@ public class Schedule {
   private Long id;
   private String name;
   private int members;
-  private Double price;
+  private BigDecimal price;
   @ManyToOne
   private Property property;
   private ScheduleType scheduleType;
-  private LocalDateTime startDate;
-  private LocalDateTime endDate;
+  private LocalDate startDate;
+  private LocalDate endDate;
   private BigDecimal cost;
 
   @Getter

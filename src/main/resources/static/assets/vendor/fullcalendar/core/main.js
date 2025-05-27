@@ -3107,6 +3107,7 @@ Docs & License: https://fullcalendar.io/
         return props;
     }
     function pluckNonDateProps(raw, calendar, leftovers) {
+        console.log(props);
         var preLeftovers = {};
         var props = refineProps(raw, NON_DATE_PROPS, {}, preLeftovers);
         var ui = processUnscopedUiProps(preLeftovers, calendar, leftovers);
@@ -6241,6 +6242,7 @@ Docs & License: https://fullcalendar.io/
             }
         };
         CalendarComponent.prototype.renderView = function (props, title) {
+            console.log(props);
             var view = this.view;
             var viewSpec = props.viewSpec, dateProfileGenerator = props.dateProfileGenerator;
             if (!view || view.viewSpec !== viewSpec) {
@@ -6347,6 +6349,8 @@ Docs & License: https://fullcalendar.io/
     // -----------------------------------------------------------------------------------------------------------------
     // Computes what the title at the top of the calendar should be for this view
     function computeTitle(dateProfile, viewOptions) {
+        console.log(dateProfile)
+        console.log(viewOptions)
         var range;
         // for views that span a large unit of time, show the proper interval, ignoring stray days before and after
         if (/^(year|month)$/.test(dateProfile.currentRangeUnit)) {
@@ -7966,11 +7970,13 @@ Docs & License: https://fullcalendar.io/
     }());
     // returns a object with all primitive props that can be compared
     function buildSegCompareObj(seg) {
+        console.log(seg)
+        console.log('seg')
         var eventDef = seg.eventRange.def;
         var range = seg.eventRange.instance.range;
         var start = range.start ? range.start.valueOf() : 0; // TODO: better support for open-range events
         var end = range.end ? range.end.valueOf() : 0; // "
-        return __assign({}, eventDef.extendedProps, eventDef, { id: eventDef.publicId, start: start,
+        return __assign({}, eventDef.extendedProps, eventDef, { id: eventDef.extendedProps.publicId, start: start,
             end: end, duration: end - start, allDay: Number(eventDef.allDay), _seg: seg // for later retrieval
          });
     }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,9 +37,9 @@ public class ScheduleRestController {
   }
 
   @GetMapping("/date")
-  public ResponseEntity<ScheduleDto> getByStartDate(@RequestParam String localDateTime, @RequestParam Long propertyId) {
+  public ResponseEntity<ScheduleDto> getByStartDate(@RequestParam String localDate, @RequestParam Long propertyId) {
     return ResponseEntity.ok(scheduleService.getByStartDateAndPropertyId(
-      LocalDateTime.parse(localDateTime, DateUtil.dateTimeFormatterWithDateAndTime()),
+            DateUtil.dateTimeFormatterWithDateAndTime(localDate),
       propertyId
     ));
   }

@@ -56,12 +56,12 @@
                             </div>
                             <ul id="iq-sidebar-toggle" class="iq-menu d-flex">
                                 <li class=" ">
-                                    <a href="/dashboard" class="">
+                                    <a th:href="@{'/dashboard'(propertyId=${param.propertyId})}" class="">
                                         <span>Dashboard</span>
                                     </a>
                                 </li>
                                 <li class="active">
-                                    <a href="/" class="">
+                                    <a th:href="@{'/'(propertyId=${param.propertyId})}" class="">
                                         <span>My Schedule</span>
                                     </a>
                                 </li>
@@ -183,14 +183,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label" for="schedule-start-date">Start Date</label>
-                                            <input class="form-control" placeholder="2020-06-20" type="datetime-local"
+                                            <input class="form-control" placeholder="2020-06-20" type="date"
                                                    name="startDate" id="schedule-start-date" required/>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label" for="schedule-end-date">End Date</label>
-                                            <input class="form-control" placeholder="2020-06-20" type="datetime-local"
+                                            <input class="form-control" placeholder="2020-06-20" type="date"
                                                    name="endDate" id="schedule-end-date" required/>
                                         </div>
                                     </div>
@@ -207,7 +207,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label" for="schedule-cost">Cost</label>
+                                            <label class="form-label" for="schedule-cost">Expense</label>
                                             <input class="form-control" type="number" name="cost"
                                                    id="schedule-cost" required/>
                                         </div>

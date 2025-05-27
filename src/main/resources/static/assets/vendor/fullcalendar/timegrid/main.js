@@ -118,6 +118,7 @@ Docs & License: https://fullcalendar.io/
         };
         // Renders the HTML for a single event segment's default rendering
         TimeGridEventRenderer.prototype.renderSegHtml = function (seg, mirrorInfo) {
+            console.log('TimeGridEventRenderer.renderSegHtml');
             var view = this.context.view;
             var eventRange = seg.eventRange;
             var eventDef = eventRange.def;
@@ -151,6 +152,8 @@ Docs & License: https://fullcalendar.io/
                 fullTimeText = this.getTimeText(eventRange, this.fullTimeFormat);
                 startTimeText = this.getTimeText(eventRange, null, false); // displayEnd=false
             }
+            console.log('eventDef');
+            console.log(eventDef);
             return '<a class="' + classes.join(' ') + '"' +
                 (eventDef.url ?
                     ' href="' + core.htmlEscape(eventDef.url) + '"' :
@@ -173,6 +176,11 @@ Docs & License: https://fullcalendar.io/
                         core.htmlEscape(eventDef.title) +
                         '</div>' :
                     '') +
+                (eventDef.title ?
+                    '<div class="fc-id">' +
+                    core.htmlEscape(eventDef.id) +
+                    '</div>' :
+                    '')
                 '</div>' +
                 /* TODO: write CSS for this
                 (isResizableFromStart ?
@@ -256,6 +264,7 @@ Docs & License: https://fullcalendar.io/
         // Given foreground event segments that have already had their position coordinates computed,
         // assigns position-related CSS values to their elements.
         TimeGridEventRenderer.prototype.assignSegCss = function (segs) {
+            console.log(segs)
             for (var _i = 0, segs_1 = segs; _i < segs_1.length; _i++) {
                 var seg = segs_1[_i];
                 core.applyStyle(seg.el, this.generateSegCss(seg));
