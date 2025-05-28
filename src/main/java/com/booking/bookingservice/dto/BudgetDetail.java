@@ -9,7 +9,8 @@ import java.math.BigDecimal;
 public class BudgetDetail {
 
     private BigDecimal expense;
-    private BigDecimal price;
+    private BigDecimal priceWithTax;
+    private BigDecimal priceWithoutTax;
     private BigDecimal total;
     private Schedule.ScheduleType scheduleType;
 

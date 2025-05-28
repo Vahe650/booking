@@ -49,12 +49,12 @@
                             <ul id="iq-sidebar-toggle" class="iq-menu d-flex">
                                 <li class="active">
                                     <a th:href="@{'/dashboard'(propertyId=${param.propertyId})}" class="">
-                                        <span>Dashboard</span>
+                                        <span>Հաշվարկ</span>
                                     </a>
                                 </li>
                                 <li class="">
                                     <a th:href="@{'/'(propertyId=${param.propertyId})}" class="">
-                                        <span>My Schedule</span>
+                                        <span>Օրացույց</span>
                                     </a>
                                 </li>
                             </ul>
@@ -97,7 +97,7 @@
                     <div class="col-lg-12 mb-3">
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="navbar-breadcrumb">
-                                <h1 class="mb-1">My Dashboard</h1>
+                                <h1 class="mb-1">Հաշվարկ</h1>
                             </div>
                         </div>
                     </div>
@@ -116,7 +116,7 @@
                                         <a class="nav-link active show" data-toggle="pill" href="#schedule01"
                                            data-placement="daterange" data-extras="#filter-button" role="tab"
                                            aria-selected="true">
-                                            Date range
+                                            Ընտրել միջակայք
                                         </a>
                                     </li>
                                 </ul>
@@ -136,24 +136,23 @@
                                                             </div>
                                                             <div class="border-left-event pl-3">
                                                                 <div class="media align-items-top">
-                                                                    <h5 class="mb-3">Cost of Schedules per Date And
-                                                                        Type</h5>
+                                                                    <h2 class="mb-3" th:text="${budget.propertyName}"></h2>
                                                                 </div>
 
                                                                 <table class="table table-bordered table-striped">
                                                                     <thead class="table-dark">
                                                                     <tr>
-                                                                        <th>Price</th>
-                                                                        <th>Percent</th>
-                                                                        <th>Expense</th>
-                                                                        <th>Schedule Type</th>
-                                                                        <th>Total</th>
+                                                                        <th>Գին</th>
+                                                                        <th>Տոկոս</th>
+                                                                        <th>Ծախս</th>
+                                                                        <th>Տեսակ</th>
+                                                                        <th>Ընդհանուր</th>
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                     <tr th:each="detail : ${budget.budgetDetails}">
-                                                                        <td th:text="${detail.price}"></td>
-                                                                        <td th:text="${detail.scheduleType.name() == 'NO_TAX' ? '0' : '15%'}"></td>
+                                                                        <td th:text="${detail.priceWithTax}"></td>
+                                                                        <td th:text="${detail.scheduleType.name() == 'NO_TAX' ? '0 (' + detail.priceWithTax+')' : '15%  (' + detail.priceWithoutTax+')'}"></td>
                                                                         <td th:text="${detail.expense}"></td>
                                                                         <td th:text="${detail.scheduleType}"></td>
                                                                         <td th:text="${detail.total}"></td>
@@ -161,14 +160,16 @@
                                                                     </tbody>
                                                                     <tfoot>
                                                                     <tr class="table-secondary">
-                                                                        <td colspan="2" class="text-end fw-bold">
-                                                                            Total:
+                                                                        <td colspan="5" class="text-end fw-bold">
+                                                                            Ընդհանուր:
                                                                         </td>
+                                                                    </tr>
+                                                                    <tr class="table-secondary">
+                                                                        <td class="text-end fw-bold" th:text="${budget.totalPriceWithTax}"> </td>
+                                                                        <td th:text="${budget.totalPriceWithOutTax}"></td>
+                                                                        <td th:text="${budget.totalExpense}"></td>
                                                                         <td></td>
-                                                                        <td></td>
-                                                                        <td th:text="${budget.total}" class="fw-bold">
-                                                                            0.00
-                                                                        </td>
+                                                                        <td th:text="${budget.total}" class="fw-bold"></td>
                                                                     </tr>
                                                                     </tfoot>
                                                                 </table>

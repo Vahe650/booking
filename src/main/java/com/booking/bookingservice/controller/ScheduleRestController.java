@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,7 +33,7 @@ public class ScheduleRestController {
   }
 
   @PostMapping("/add")
-  public void addSchedule(@ModelAttribute ScheduleDto scheduleDto) {
+  public void addSchedule(@ModelAttribute @Valid ScheduleDto scheduleDto) {
     scheduleService.save(scheduleDto);
   }
 

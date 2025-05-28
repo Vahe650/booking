@@ -57,12 +57,12 @@
                             <ul id="iq-sidebar-toggle" class="iq-menu d-flex">
                                 <li class=" ">
                                     <a th:href="@{'/dashboard'(propertyId=${param.propertyId})}" class="">
-                                        <span>Dashboard</span>
+                                        <span>Հաշվարկ</span>
                                     </a>
                                 </li>
                                 <li class="active">
                                     <a th:href="@{'/'(propertyId=${param.propertyId})}" class="">
-                                        <span>My Schedule</span>
+                                        <span>Օրացույց</span>
                                     </a>
                                 </li>
                             </ul>
@@ -109,29 +109,29 @@
                 <div class="col-lg-12 mb-4">
                     <div class="py-4 border-bottom">
                         <div class="form-title text-center">
-                            <h3>My Schedule</h3>
+                            <h3>Ամրագրումներ</h3>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-12">
-                    <h4 class="mb-3">Choose A Schedule Below</h4>
+<!--                    <h4 class="mb-3">Choose A Schedule Below</h4>-->
                     <div class="d-flex flex-wrap align-items-center justify-content-between my-schedule mb-4">
                         <div class="d-flex align-items-center justify-content-between">
 
                         </div>
                         <div class="create-workform property">
                             <a href="#" data-toggle="modal" data-target="#date-event"
-                               class="btn btn-primary pr-5 position-relative">New Schedule<span class="add-btn"><i
+                               class="btn btn-primary pr-5 position-relative">Նոր ամրագրում<span class="add-btn"><i
                                     class="ri-add-line"></i></span></a>
                         </div>
                         <div class="create-workform">
                             <a href="#" data-toggle="modal" data-target="#property-event"
                                class="btn btn-primary pr-5 position-relative">
-                                New Property<span class="add-btn"><i class="ri-add-line"></i></span>
+                                Նոր օբյեկտ<span class="add-btn"><i class="ri-add-line"></i></span>
                             </a>
                         </div>
                     </div>
-                    <h4 class="mb-3">Set Your weekly hours</h4>
+                    <h4 class="mb-3">Օրացույց</h4>
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="card card-block card-stretch">
@@ -150,53 +150,53 @@
                 <div class="modal-content">
                     <div class="modal-body">
                         <div class="popup text-left">
-                            <h4 class="mb-3">Add Schedule</h4>
+                            <h4 class="mb-3">Նոր Ամրագրում</h4>
                             <h4 class="mb-3" id="modalTitle"></h4>
                             <form id="scheduleForm">
                                 <input type="hidden" id="schedule-id" name="id">
                                 <div class="content create-workform row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="form-label" for="schedule-title">Schedule For</label>
-                                            <input class="form-control" placeholder="Enter Title" type="text"
+                                            <label class="form-label" for="schedule-title">Անվանում</label>
+                                            <input class="form-control" placeholder="Անվանում" type="text"
                                                    name="name" id="schedule-title" required/>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label" for="schedule-start-date">Members Count *</label>
+                                            <label class="form-label" for="schedule-start-date">Հյուրերի քանակ *</label>
                                             <input class="form-control" placeholder="0" type="number"
-                                                   min="1" max="10"
+                                                   min="1" max="20"
                                                    message="You can give maximum 10 members" name="members"
                                                    id="members-count" required/>
                                             <span id="errorMsg"
-                                                  style="display:none;">you can give maximum 10 members</span>
+                                                  style="display:none;">Քանակը պետք է փոքր լինի 20ից</span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label" for="schedule-price">Price</label>
+                                            <label class="form-label" for="schedule-price">Գին</label>
                                             <input class="form-control" type="number" name="price"
-                                                   id="schedule-price" value="20000" required/>
+                                                   id="schedule-price" required/>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label" for="schedule-start-date">Start Date</label>
+                                            <label class="form-label" for="schedule-start-date">Սկիզբ</label>
                                             <input class="form-control" placeholder="2020-06-20" type="date"
                                                    name="startDate" id="schedule-start-date" required/>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label" for="schedule-end-date">End Date</label>
+                                            <label class="form-label" for="schedule-end-date">Ավարտ</label>
                                             <input class="form-control" placeholder="2020-06-20" type="date"
                                                    name="endDate" id="schedule-end-date" required/>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label" for="schedule-type">Type</label>
+                                            <label class="form-label" for="schedule-type">Տեսակ</label>
                                             <select class="form-control" name="type" id="schedule-type" required>
                                                 <option th:each="type : ${scheduleTypes}"
                                                         th:value="${type}"
@@ -207,15 +207,15 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label" for="schedule-cost">Expense</label>
+                                            <label class="form-label" for="schedule-cost">Ծախս</label>
                                             <input class="form-control" type="number" name="cost"
                                                    id="schedule-cost" required/>
                                         </div>
                                     </div>
                                     <div class="col-md-12 mt-4">
                                         <div class="d-flex flex-wrap align-items-ceter justify-content-center">
-                                            <button class="btn btn-primary mr-4" data-dismiss="modal">Cancel</button>
-                                            <input id='submitSchedule' class="btn btn-outline-primary" value="Add"
+                                            <button class="btn btn-primary mr-4" data-dismiss="modal">Չեղարկել</button>
+                                            <input id='submitSchedule' class="btn btn-outline-primary" value="Պահմանել"
                                                    type="button">
                                         </div>
                                     </div>
@@ -232,13 +232,13 @@
                 <div class="modal-content">
                     <div class="modal-body">
                         <div class="popup text-left">
-                            <h4 class="mb-3" id="propertyModalTitle">Add Property</h4>
+                            <h4 class="mb-3" id="propertyModalTitle">Ավելացնել Օբյեկտ</h4>
                             <form id="propertyForm">
                                 <input type="hidden" id="property-id" name="id">
                                 <div class="content create-workform row">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label class="form-label" for="property-name">Property Name</label>
+                                            <label class="form-label" for="property-name">Անվանում</label>
                                             <input class="form-control" placeholder="Enter Property Name" type="text"
                                                    name="name" id="property-name" required/>
                                         </div>
@@ -259,8 +259,8 @@
                                     </div>
                                     <div class="col-md-12 mt-4">
                                         <div class="d-flex flex-wrap align-items-center justify-content-center">
-                                            <button class="btn btn-primary mr-4" data-dismiss="modal">Cancel</button>
-                                            <input id="submitProperty" class="btn btn-outline-primary" value="Add" type="button">
+                                            <button class="btn btn-primary mr-4" data-dismiss="modal">Չեղարկել</button>
+                                            <input id="submitProperty" class="btn btn-outline-primary" value="Պահմանել" type="button">
                                         </div>
                                     </div>
                                 </div>

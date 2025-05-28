@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityExistsException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,15 +46,22 @@ public class ScheduleServiceImpl implements ScheduleService {
         log.info("Calculating cost by schedule type");
         List<Schedule> schedules = scheduleRepository.findAllActiveBetween(startDate, endDate, propertyId);
         Budget budget = new Budget();
+        budget.setPropertyName(
+        schedules.isEmpty()
+                ? propertyRepository.findById(propertyId).orElseThrow(EntityExistsException::new).getName()
+                : schedules.get(0).getProperty().getName()
+        );
         for (Schedule schedule : schedules) {
             BudgetDetail budgetDetail = new BudgetDetail();
             budgetDetail.setExpense(schedule.getCost());
-            budgetDetail.setPrice(schedule.getPrice());
+            budgetDetail.setPriceWithTax(schedule.getPrice());
             if (schedule.getScheduleType() == Schedule.ScheduleType.NO_TAX) {
                 budgetDetail.setTotal(schedule.getPrice().subtract(schedule.getCost()));
+                budgetDetail.setPriceWithoutTax(schedule.getPrice());
             } else {
-                budgetDetail.setTotal(schedule.getPrice().multiply(BigDecimal.valueOf(0.85)).subtract(schedule.getCost()));
-
+                BigDecimal tax = schedule.getPrice().multiply(BigDecimal.valueOf(0.85));
+                budgetDetail.setPriceWithoutTax(tax);
+                budgetDetail.setTotal(tax.subtract(schedule.getCost()));
             }
             budgetDetail.setScheduleType(schedule.getScheduleType());
             budget.addBudgetDetail(budgetDetail);

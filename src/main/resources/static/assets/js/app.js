@@ -746,6 +746,7 @@ Index Of Script
                                         $('#schedule-end-date').val(data.endDate || '');
                                         $('#schedule-cost').val(data.cost || '');
                                         $('#schedule-type').val(data.scheduleType || '');
+                                        $('#schedule-price').val(data.price || '');
                                     } else {
                                         // Clear all inputs
                                         $('#schedule-id').val('');
@@ -755,7 +756,7 @@ Index Of Script
                                         $('#schedule-end-date').val(date);
                                         $('#schedule-cost').val(5000);
                                         $('#schedule-type').val('BOOKING');
-
+                                        $('#schedule-price').val(20000);
                                     }
 
                                     $('#date-event').modal('show');

@@ -243,10 +243,11 @@ Docs & License: https://fullcalendar.io/
             titleHtml =
                 '<span class="fc-title">' +
                     (core.htmlEscape(eventDef.title || '') || '&nbsp;') + // we always want one line of height
-                    '</span>' +
-                '<span class="fc-id">' +
-            (core.htmlEscape(publicId || '') || '&nbsp;') + // we always want one line of height
-            '</span>';
+                    '</span>';
+            //     +
+            //     '<span class="fc-id">|' +
+            // (core.htmlEscape(publicId || '') || '&nbsp;') + // we always want one line of height
+            // '</span>';
             return '<a class="' + classes.join(' ') + '"' +
                 (eventDef.url ?
                     ' href="' + core.htmlEscape(eventDef.url) + '"' :
