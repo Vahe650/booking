@@ -4,6 +4,7 @@ import com.booking.bookingservice.model.Schedule;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 public class BudgetDetail {
@@ -13,5 +14,7 @@ public class BudgetDetail {
     private BigDecimal priceWithoutTax;
     private BigDecimal total;
     private Schedule.ScheduleType scheduleType;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
 }

@@ -142,6 +142,7 @@
                                                                 <table class="table table-bordered table-striped">
                                                                     <thead class="table-dark">
                                                                     <tr>
+                                                                        <th>Ամսաթիվ</th>
                                                                         <th>Գին</th>
                                                                         <th>Տոկոս</th>
                                                                         <th>Ծախս</th>
@@ -151,25 +152,23 @@
                                                                     </thead>
                                                                     <tbody>
                                                                     <tr th:each="detail : ${budget.budgetDetails}">
-                                                                        <td th:text="${detail.priceWithTax}"></td>
-                                                                        <td th:text="${detail.scheduleType.name() == 'NO_TAX' ? '0 (' + detail.priceWithTax+')' : '15%  (' + detail.priceWithoutTax+')'}"></td>
-                                                                        <td th:text="${detail.expense}"></td>
+                                                                        <td th:text="${#temporals.format(detail.startDate, 'dd MMMM yyyy')+'-'+#temporals.format(detail.endDate, 'dd MMMM yyyy')}"></td>
+                                                                        <td th:text="${#numbers.formatDecimal(detail.priceWithTax, 0, 'COMMA', 0, 'POINT')}"></td>
+                                                                        <td th:text="${detail.scheduleType.name() == 'NO_TAX' ? '0 '
+                                                                        : '15%  (' + #numbers.formatDecimal(detail.priceWithoutTax, 0, 'COMMA', 0, 'POINT')+')'}"></td>
+                                                                        <td th:text="${#numbers.formatDecimal(detail.expense, 0, 'COMMA', 0, 'POINT')}"></td>
                                                                         <td th:text="${detail.scheduleType}"></td>
-                                                                        <td th:text="${detail.total}"></td>
+                                                                        <td th:text="${#numbers.formatDecimal(detail.total, 0, 'COMMA', 0, 'POINT')}"></td>
                                                                     </tr>
                                                                     </tbody>
                                                                     <tfoot>
                                                                     <tr class="table-secondary">
-                                                                        <td colspan="5" class="text-end fw-bold">
-                                                                            Ընդհանուր:
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr class="table-secondary">
-                                                                        <td class="text-end fw-bold" th:text="${budget.totalPriceWithTax}"> </td>
-                                                                        <td th:text="${budget.totalPriceWithOutTax}"></td>
-                                                                        <td th:text="${budget.totalExpense}"></td>
+                                                                        <td>Ընդհանուր:</td>
+                                                                        <td class="text-end fw-bold" th:text="${#numbers.formatDecimal(budget.totalPriceWithTax, 0, 'COMMA', 0, 'POINT')}"> </td>
+                                                                        <td th:text="${#numbers.formatDecimal(budget.totalPriceWithOutTax, 0, 'COMMA', 0, 'POINT')}"></td>
+                                                                        <td th:text="${#numbers.formatDecimal(budget.totalExpense, 0, 'COMMA', 0, 'POINT')}"></td>
                                                                         <td></td>
-                                                                        <td th:text="${budget.total}" class="fw-bold"></td>
+                                                                        <td th:text="${#numbers.formatDecimal(budget.total, 0, 'COMMA', 0, 'POINT')}" class="fw-bold"></td>
                                                                     </tr>
                                                                     </tfoot>
                                                                 </table>

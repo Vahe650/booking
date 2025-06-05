@@ -54,16 +54,19 @@ public class ScheduleServiceImpl implements ScheduleService {
         for (Schedule schedule : schedules) {
             BudgetDetail budgetDetail = new BudgetDetail();
             budgetDetail.setExpense(schedule.getCost());
-            budgetDetail.setPriceWithTax(schedule.getPrice());
+            BigDecimal price = schedule.getPrice();
+            budgetDetail.setPriceWithTax(price);
             if (schedule.getScheduleType() == Schedule.ScheduleType.NO_TAX) {
-                budgetDetail.setTotal(schedule.getPrice().subtract(schedule.getCost()));
-                budgetDetail.setPriceWithoutTax(schedule.getPrice());
+                budgetDetail.setPriceWithoutTax(BigDecimal.ZERO);
+                budgetDetail.setTotal(price.subtract(schedule.getCost()));
             } else {
-                BigDecimal tax = schedule.getPrice().multiply(BigDecimal.valueOf(0.85));
+                BigDecimal tax = price.multiply(BigDecimal.valueOf(0.15));
                 budgetDetail.setPriceWithoutTax(tax);
-                budgetDetail.setTotal(tax.subtract(schedule.getCost()));
+                budgetDetail.setTotal(price.subtract(tax.add(schedule.getCost())));
             }
             budgetDetail.setScheduleType(schedule.getScheduleType());
+            budgetDetail.setStartDate(schedule.getStartDate());
+            budgetDetail.setEndDate(schedule.getEndDate());
             budget.addBudgetDetail(budgetDetail);
         }
         return budget;

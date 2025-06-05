@@ -433,7 +433,8 @@ Index Of Script
             let startDateParam = start.format('YYYY-MM-DDTHH:mm:ss');
             let endDateParam = end.format('YYYY-MM-DDTHH:mm:ss');
 
-            window.location.href = '/dashboard?startDate=' + encodeURIComponent(startDateParam)
+            let propertyId = getParameterByName('propertyId');
+            window.location.href = '/dashboard?propertyId=' + propertyId + '&startDate=' + encodeURIComponent(startDateParam)
                 + '&endDate=' + encodeURIComponent(endDateParam);
         });
 
@@ -750,7 +751,7 @@ Index Of Script
                                     } else {
                                         // Clear all inputs
                                         $('#schedule-id').val('');
-                                        $('#schedule-title').val('');
+                                        $('#schedule-title').val('book: '+ date);
                                         $('#members-count').val(4);
                                         $('#schedule-start-date').val(date);
                                         $('#schedule-end-date').val(date);

@@ -14,7 +14,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("""
             select s from Schedule s  
             where (s.startDate = :localDate and s.property.id = :propertyId) 
-            or (s.startDate < :localDate and s.endDate > :localDate)
+            AND (s.startDate < :localDate and s.endDate > :localDate)
             """)
     Schedule findAllByStartDateAndPropertyIdOrStartDateGreaterThanAndStartDate(
             @Param("localDate") LocalDate localDate, @Param("propertyId") Long propertyId);
@@ -23,8 +23,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("""
             select s from Schedule s  
-             where s.startDate <= :end  
-             and s.endDate >= :start and s.property.id = :propertyId
+             where s.startDate between :start and :end
+             and s.property.id = :propertyId order by s.startDate
              """)
     List<Schedule> findAllActiveBetween(@Param("start") LocalDate startDate,
                                         @Param("end") LocalDate endDate,
